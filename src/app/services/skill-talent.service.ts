@@ -13,17 +13,23 @@ export class SkillTalentService {
   // Range Combat,
   // Gardening,
   // Fishing,
-  // Cooking
+  // Cooking,
+  // Magic,
+  // Summoning,
+  // Explosives
   private _skillData = [
-    [1.0464799404144, 50],
-    [1.049399971962, 200],
-    [1.0271600484848, 50],
-    [1.0494300127029, 2000],
-    [1.0370600223541, 30],
-    [1.0238200426102, 50],
-    [1.0252599716187, 15],
-    [1.0271600484848, 5],
-    [1.0370600223541, 5]
+    [1.039572, 50],
+    [1.0494, 200],
+    [1.02382, 50],
+    [1.04943, 2000],
+    [1.03706, 30],
+    [1.02382, 50],
+    [1.02526, 15],
+    [1.0193, 5],
+    [1.03706, 5],
+    [1.02382, 50],
+    [1.0395, 50],
+    [1.0128, 10]
   ];
 
   private _$selectedSkill: Subject<number> = new Subject();
@@ -50,7 +56,10 @@ export class SkillTalentService {
       'Ranged Combat',
       'Gardening',
       'Fishing',
-      'Cooking'
+      'Cooking',
+      'Magic',
+      'Summoning',
+      'Explosives'
     ];
     return skillNames[skillID];
   }
