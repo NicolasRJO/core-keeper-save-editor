@@ -32,16 +32,18 @@ export class TalentTooltipComponent {
     const multiplierToUse = this.talent.tenth ? 0.1 : 1;
     // We have a function that takes in an array.
     // Instead of creating one that doesn't take an array we give and array and get the first index
-    this.description = this.conditionDataService
-      .transformConditionIdsToLabel(
-        [
-          {
-            id: this.talent.conditionId,
-            value: +(pointsToUse * this.talent.increment * multiplierToUse).toFixed(2)
-          }
-        ],
-        'skill'
-      )[0][0]
-      .toString();
+    this.description = this.talent.conditionId
+      ? this.conditionDataService
+          .transformConditionIdsToLabel(
+            [
+              {
+                id: this.talent.conditionId,
+                value: +(pointsToUse * this.talent.increment * multiplierToUse).toFixed(2)
+              }
+            ],
+            'skill'
+          )[0][0]
+          .toString()
+      : '';
   }
 }

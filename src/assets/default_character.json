@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 12,
   "characterGuid": "",
   "characterCustomization": {
     "name": {
@@ -91,6 +91,18 @@
     },
     {
       "skillID": 8,
+      "value": 0
+    },
+    {
+      "skillID": 9,
+      "value": 0
+    },
+    {
+      "skillID": 10,
+      "value": 0
+    },
+    {
+      "skillID": 11,
       "value": 0
     }
   ],
@@ -535,9 +547,22 @@
     {
       "skillTreeID": 8,
       "points": [0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "skillTreeID": 9,
+      "points": [0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "skillTreeID": 10,
+      "points": [0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "skillTreeID": 11,
+      "points": [0, 0, 0, 0, 0, 0, 0]
     }
   ],
   "characterType": 0,
+  "completedTutorials": [],
   "discoveredBiomes": [],
   "discoveredObjects2": [],
   "disabledSoulPowers": []

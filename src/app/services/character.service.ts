@@ -38,7 +38,7 @@ export class CharacterService {
 
     // Skill are added later to the file, when earned the first xp
     // Create them if they dont exist
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 12; i++) {
       const skill = character.skills.find(skill => skill.skillID === i);
       if (skill == null) {
         character.skills.push({ skillID: i, value: 0 });
