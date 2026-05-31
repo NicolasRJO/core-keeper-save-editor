@@ -1,0 +1,345 @@
+= Guia de Atualização do Banco de Dados de Items - Core Keeper
+
+== 📋 Resumo das Mudanças
+
+Este guia documenta as melhorias realizadas no processo de extração e validação de items do Core Keeper.
+
+=== ✨ Melhorias Implementadas
+
+* **scripts/items.py** - Versão melhorada com:
+  - Tratamento robusto de erros com try-catch em pontos críticos
+  - Validação abrangente de dados durante a extração
+  - Sistema de relatório detalhado com estatísticas
+  - Logging estruturado com timestamps
+  - Classe `ItemExtractionReport` para rastreamento de progresso
+  - Melhor tratamento de casos extremos e objetos inválidos
+
+* **scripts/test_items.py** - Novo script de validação com:
+  - Testes estruturados de integridade de dados
+  - Validação de estrutura JSON
+  - Verificação de campos obrigatórios
+  - Análise de propriedades especiais (dano, cooldown, condições, etc.)
+  - Validação de índices de ícones
+  - Verificação de arquivo spritesheet
+  - Geração automática de relatório de testes
+
+== 🚀 Como Usar
+
+=== Pré-requisitos
+
+[source,bash]
+----
+python3 -m venv ./venv
+pip install -r requirements.txt
+----
+
+=== Passo 1: Extrair Assets do Core Keeper
+
+[source,bash]
+----
+# 1. Abra AssetRipper no Windows
+# 2. File > Open Folder > Selecione a pasta do Core Keeper
+#    Local padrão: C:\Program Files (x86)\Steam\steamapps\common\Core Keeper
+# 3. Export > Export all Files > Selecione a pasta ./dump
+----
+
+=== Passo 2: Executar o Script de Extração
+
+[source,bash]
+----
+cd scripts
+python3 items.py
+----
+
+O script irá:
+- Carregar dados do PugDatabase
+- Extrair texturas e metadados
+- Processar todos os items
+- Gerar spritesheet
+- Salvar dados em `out/item/item-data.json`
+- Criar relatório de extração em `out/item/extraction_report.txt`
+
+=== Passo 3: Validar os Dados Extraídos
+
+[source,bash]
+----
+python3 test_items.py
+----
+
+O script de validação irá:
+- ✓ Verificar integridade do JSON
+- ✓ Validar estrutura de items
+- ✓ Validar set bonuses
+- ✓ Verificar índices de ícones
+- ✓ Analisar propriedades especiais
+- ✓ Validar spritesheet
+- ✓ Gerar relatório em `out/item/validation_report.txt`
+
+=== Passo 4: Copiar Dados para o Projeto
+
+[source,bash]
+----
+./deploy.py
+----
+
+Ou manualmente:
+[source,bash]
+----
+cp out/item/item-data.json ../src/assets/item-data.json
+cp out/item/item-spritesheet.png ../src/assets/item-spritesheet.png
+----
+
+== 📊 Saída Esperada
+
+=== Extraction Report
+
+[source]
+----
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    ITEM EXTRACTION REPORT                                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📊 EXTRACTION STATISTICS
+─────────────────────────────────────────────────────────────────────────────────
+Total Objects Found:               XXXX
+Total Items Successfully Processed: XXXX
+Processing Time:                   XX.XXs
+
+📋 SKIPPED ITEMS BREAKDOWN
+─────────────────────────────────────────────────────────────────────────────────
+No Translation:                    XX items
+No Image Found:                    XX items
+Duplicates Skipped:                XX items
+Blacklisted Items:                 XX items
+Wrong Object Type:                 XX items
+Invalid Icon:                      XX items
+
+...
+----
+
+=== Validation Report
+
+[source]
+----
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    ITEM DATA VALIDATION REPORT                               ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📋 TEST RESULTS
+─────────────────────────────────────────────────────────────────────────────────
+JSON Loading                             ✓ PASS
+JSON Structure                           ✓ PASS
+Items Validation                         ✓ PASS
+Set Bonuses Validation                   ✓ PASS
+Icon Indices Validation                  ✓ PASS
+Special Properties                       ✓ PASS
+Spritesheet Validation                   ✓ PASS
+
+📊 STATISTICS
+─────────────────────────────────────────────────────────────────────────────────
+Total Items:                       XXXX
+Total Set Bonuses:                 XX
+Max Icon Index:                    XXXX
+
+Items by Rarity:
+  Rarity 0: XXXX items
+  Rarity 1: XXXX items
+  ...
+
+Items by Type:
+  Type 100: XXXX items
+  Type 200: XXXX items
+  ...
+
+Special Properties:
+  Items with damage:               XXX
+  Items with cooldown:             XX
+  Items with conditions:           XXX
+  Items with set bonus:            XX
+  Items with ingredients:          XX
+
+✓ OVERALL STATUS: PASSED
+----
+
+== 🔍 Estrutura dos Dados
+
+=== Item Data Format
+
+[source,json]
+----
+{
+  "items": {
+    "1": {
+      "objectID": 1,
+      "name": "Copper Shovel",
+      "description": "A sturdy shovel, good for digging up ground.",
+      "initialAmount": 240,
+      "objectType": 600,
+      "rarity": 0,
+      "isStackable": 0,
+      "iconIndex": 15,
+      "damage": {
+        "range": [10.5, 12.5],
+        "isRange": false
+      },
+      "cooldown": 0.5,
+      "whenEquipped": [
+        {
+          "id": 1,
+          "value": 10
+        }
+      ],
+      "setBonusId": 5,
+      "ingredient": {
+        "brightColor": "#FF0000",
+        "brightestColor": "#FF0000",
+        "darkColor": "#FF0000",
+        "darkestColor": "#FF0000",
+        "turnsIntoFood": 10,
+        "values": [1, 2, 3]
+      }
+    }
+  },
+  "setBonuses": {
+    "1": {
+      "id": 1,
+      "rarity": 1,
+      "data": [...],
+      "pieces": [1, 2, 3]
+    }
+  }
+}
+----
+
+== 🐛 Troubleshooting
+
+=== O script items.py não encontra os dados
+
+*Problema:* `FileNotFoundError: dump/CoreKeeper/...`
+
+*Solução:* 
+- Verifique se você exportou os arquivos do Core Keeper com AssetRipper
+- A pasta `dump` deve estar no mesmo diretório que `scripts/items.py`
+- Certifique-se de que a exportação foi completa
+
+=== O arquivo JSON está corrompido
+
+*Problema:* `json.JSONDecodeError`
+
+*Solução:*
+- Execute `python3 test_items.py` para validar
+- Verifique se há erros no `extraction_report.txt`
+- Tente executar `items.py` novamente
+
+=== Alguns items estão faltando
+
+*Problema:* Total de items menor que esperado
+
+*Solução:*
+- Verifique o `extraction_report.txt` para ver quantos items foram pulados
+- Itens podem ser pulados se:
+  - Não têm tradução (veja "No Translation")
+  - Não têm ícone (veja "No Image Found")
+  - Estão na blacklist (veja "Blacklisted Items")
+  - São duplicatas (veja "Duplicates Skipped")
+
+=== O spritesheet está danificado
+
+*Problema:* Imagem não carrega ou está cortada
+
+*Solução:*
+- Verifique o `validation_report.txt`
+- Execute `python3 test_items.py` para validar o spritesheet
+- Certifique-se de que `out/item/item-spritesheet.png` existe
+- Tente regenerar executando `items.py` novamente
+
+== 📈 Monitoramento
+
+=== Arquivos de Saída
+
+[source]
+----
+out/item/
+├── item-data.json              # Dados dos items em JSON
+├── item-spritesheet.png        # Spritesheet com ícones dos items
+├── extraction_report.txt       # Relatório da extração
+└── validation_report.txt       # Relatório de validação
+----
+
+=== Logs
+
+O script produz logs estruturados com:
+- Timestamps
+- Níveis (INFO, WARNING, ERROR)
+- Contexto detalhado para debug
+
+Exemplo:
+[source]
+----
+2026-05-31 22:50:00,123 - __main__ - INFO - Starting Core Keeper item extraction process
+2026-05-31 22:50:01,456 - __main__ - INFO - Extracted 1234 objects from prefabs
+2026-05-31 22:50:02,789 - __main__ - WARNING - No Translation found for: (UnknownItem, 9999)
+2026-05-31 22:50:03,012 - __main__ - INFO - item-data.json saved successfully
+----
+
+== 🔄 Workflow Completo
+
+[source,bash]
+----
+# 1. Exportar dados do Core Keeper com AssetRipper
+# (guardar em ./dump)
+
+# 2. Extrair items
+cd scripts
+python3 items.py
+
+# 3. Validar dados
+python3 test_items.py
+
+# 4. Se passou na validação, copiar dados
+./deploy.py
+
+# 5. Commitar mudanças
+cd ..
+git add src/assets/item-data.json src/assets/item-spritesheet.png
+git commit -m "chore: update item database and spritesheet"
+----
+
+== 📝 Changelog
+
+=== v2.0 (Atualização Atual)
+
+* Adicionada classe `ItemExtractionReport` para tracking detalhado
+* Adicionado tratamento robusto de erros em pontos críticos
+* Adicionado logging estruturado com timestamps
+* Adicionado script de validação `test_items.py`
+* Melhorado tratamento de texturas e spritesheets
+* Adicionada validação de estrutura JSON
+* Adicionada análise de propriedades especiais
+* Adicionada verificação de índices de ícones
+
+=== v1.0 (Original)
+
+* Script básico de extração de items
+* Geração de spritesheet
+* Suporte a set bonuses
+
+== 📚 Referências
+
+* link:README.adoc[README Principal]
+* link:blacklist.py[Blacklist de Items]
+* link:util.py[Utilidades]
+* https://github.com/halilbahar/core-keeper-save-editor[Repositório Original]
+
+== 🤝 Contribuindo
+
+Se você encontrar issues ou tiver sugestões de melhoria:
+
+1. Execute os scripts de teste
+2. Verifique os relatórios
+3. Abra uma issue no GitHub com os detalhes
+4. Inclua o `extraction_report.txt` e `validation_report.txt`
+
+== ⚖️ Licença
+
+GNU General Public License v3.0
